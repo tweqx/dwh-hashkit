@@ -36,7 +36,7 @@ Constants :
 * `HASHBOX_WHIRLPOOLT`
 * `HASHBOX_WHIRLPOOL`
 
-##Example code :
+## Example code :
 ```c
 #include "hashbox.h"
 
