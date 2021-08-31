@@ -23,7 +23,7 @@
 #include "gost3411-2012-ref.h"
 #endif
 
-ALIGN(16) union uint512_u
+ALIGN(16) typedef union uint512_u
 {
     unsigned long long QWORD[8];
 } uint512_u;
@@ -51,4 +51,3 @@ void GOST34112012Update(GOST34112012Context *CTX, const unsigned char *data,
 void GOST34112012Final(GOST34112012Context *CTX, unsigned char *digest); 
 
 void GOST34112012Cleanup(GOST34112012Context *CTX);
-
