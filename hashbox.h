@@ -71,5 +71,6 @@ void hashbox_update(hashbox_t* hashbox, uint8_t* data, uint32_t length);
 // Computes the digest of each hash, returns HASHBOX_NO_MATCH if none are matching to the DWH,
 //  or else the relevant HASHBOX_* constant
 unsigned int hashbox_final(hashbox_t* hashbox);
+unsigned char ** hashbox_hash(hashbox_t* hashbox);
 
 #endif

@@ -10,6 +10,7 @@ hashbox_t* hashbox_new() {
     puts("hasbox_new: hashbox allocation failed");
 
     return NULL;
+
   }
 
   // Contexts
@@ -190,3 +191,90 @@ cleanup:
   return result;
 }
 
+unsigned char ** hashbox_hash(hashbox_t* hashbox) {
+  uint8_t message_digest[64] = {0};
+  unsigned char** result = malloc(sizeof(unsigned char*) * 18);
+
+  // Finalize and check hashes
+  EVP_DigestFinal_ex(hashbox->sha512, message_digest, NULL);
+  result[0] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[0], message_digest, sizeof(uint8_t) * 64);
+
+  EVP_DigestFinal_ex(hashbox->blake2b, message_digest, NULL);
+  result[1] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[1], message_digest, sizeof(uint8_t) * 64);
+
+  GOST34112012Final(&hashbox->streebog, message_digest);
+  result[2] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[2], message_digest, sizeof(uint8_t) * 64);
+
+  EVP_DigestFinal_ex(hashbox->sha3, message_digest, NULL);
+  result[3] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[3], message_digest, sizeof(uint8_t) * 64);
+
+  fnv_final(&hashbox->fnv0, message_digest);
+  result[4] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[4], message_digest, sizeof(uint8_t) * 64);
+
+  fnv_final(&hashbox->fnv1, message_digest);
+  result[5] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[5], message_digest, sizeof(uint8_t) * 64);
+
+  fnv_final(&hashbox->fnv1a, message_digest);
+  result[6] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[6], message_digest, sizeof(uint8_t) * 64);
+
+  grostl_final(&hashbox->grostl, message_digest);
+  result[7] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[7], message_digest, sizeof(uint8_t) * 64);
+
+  md6_final(&hashbox->md6, message_digest);
+  result[8] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[8], message_digest, sizeof(uint8_t) * 64);
+
+  jh_final(&hashbox->jh, message_digest);
+  result[9] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[9], message_digest, sizeof(uint8_t) * 64);
+
+  blake512_final(&hashbox->blake512, message_digest);
+  result[10] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[10], message_digest, sizeof(uint8_t) * 64);
+
+  lsh_final(&hashbox->lsh, message_digest);
+  result[11] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[11], message_digest, sizeof(uint8_t) * 64);
+
+  skein_final(&hashbox->skein, message_digest);
+  result[12] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[12], message_digest, sizeof(uint8_t) * 64);
+
+  keccak3_final(message_digest, &hashbox->keccak3);
+  result[13] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[13], message_digest, sizeof(uint8_t) * 64);
+
+  cubehash_final(&hashbox->cubehash, message_digest);
+  result[14] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[14], message_digest, sizeof(uint8_t) * 64);
+
+  whirlpool_final(&hashbox->whirlpool0, message_digest);
+  result[15] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[15], message_digest, sizeof(uint8_t) * 64);
+
+  whirlpool_final(&hashbox->whirlpoolT, message_digest);
+  result[16] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[16], message_digest, sizeof(uint8_t) * 64);
+
+  whirlpool_final(&hashbox->whirlpool, message_digest);
+  result[17] = malloc(sizeof(uint8_t)*64);
+  memcpy(result[17], message_digest, sizeof(uint8_t) * 64);
+
+  EVP_MD_CTX_free(hashbox->sha512);
+  EVP_MD_CTX_free(hashbox->blake2b);
+  GOST34112012Cleanup(&hashbox->streebog);
+  EVP_MD_CTX_free(hashbox->sha3);
+  cubehash_cleanup(&hashbox->cubehash);
+
+  free(hashbox);
+
+  return result;
+}
