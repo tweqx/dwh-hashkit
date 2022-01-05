@@ -190,3 +190,80 @@ cleanup:
   return result;
 }
 
+hashes_list_t* hashbox_final_hashes(hashbox_t* hashbox) {
+  uint8_t message_digest[64] = {0};
+
+  hashes_list_t* hashes = malloc(sizeof(hashes_list_t));
+  if (!hashes) {
+    puts("hashbox_final_hashes: hashes list allocation failed");
+
+    goto cleanup;
+  }
+
+  // Finalizes and copy hashes
+  EVP_DigestFinal_ex(hashbox->sha512, message_digest, NULL);
+  memcpy(hashes->sha512, message_digest, 64);
+
+  EVP_DigestFinal_ex(hashbox->blake2b, message_digest, NULL);
+  memcpy(hashes->blake2b, message_digest, 64);
+
+  GOST34112012Final(&hashbox->streebog, message_digest);
+  memcpy(hashes->streebog, message_digest, 64);
+
+  EVP_DigestFinal_ex(hashbox->sha3, message_digest, NULL);
+  memcpy(hashes->sha3, message_digest, 64);
+
+  fnv_final(&hashbox->fnv0, message_digest);
+  memcpy(hashes->fnv0, message_digest, 64);
+
+  fnv_final(&hashbox->fnv1, message_digest);
+  memcpy(hashes->fnv1, message_digest, 64);
+
+  fnv_final(&hashbox->fnv1a, message_digest);
+  memcpy(hashes->fnv1a, message_digest, 64);
+
+  grostl_final(&hashbox->grostl, message_digest);
+  memcpy(hashes->grostl, message_digest, 64);
+
+  md6_final(&hashbox->md6, message_digest);
+  memcpy(hashes->md6, message_digest, 64);
+
+  jh_final(&hashbox->jh, message_digest);
+  memcpy(hashes->jh, message_digest, 64);
+
+  blake512_final(&hashbox->blake512, message_digest);
+  memcpy(hashes->blake512, message_digest, 64);
+
+  lsh_final(&hashbox->lsh, message_digest);
+  memcpy(hashes->lsh, message_digest, 64);
+
+  skein_final(&hashbox->skein, message_digest);
+  memcpy(hashes->skein, message_digest, 64);
+
+  keccak3_final(message_digest, &hashbox->keccak3);
+  memcpy(hashes->keccak3, message_digest, 64);
+
+  cubehash_final(&hashbox->cubehash, message_digest);
+  memcpy(hashes->cubehash, message_digest, 64);
+
+  whirlpool_final(&hashbox->whirlpool0, message_digest);
+  memcpy(hashes->whirlpool0, message_digest, 64);
+
+  whirlpool_final(&hashbox->whirlpoolT, message_digest);
+  memcpy(hashes->whirlpoolT, message_digest, 64);
+
+  whirlpool_final(&hashbox->whirlpool, message_digest);
+  memcpy(hashes->whirlpool, message_digest, 64);
+
+  // Cleanup
+cleanup:
+  EVP_MD_CTX_free(hashbox->sha512);
+  EVP_MD_CTX_free(hashbox->blake2b);
+  GOST34112012Cleanup(&hashbox->streebog);
+  EVP_MD_CTX_free(hashbox->sha3);
+  cubehash_cleanup(&hashbox->cubehash);
+
+  free(hashbox);
+
+  return hashes;
+}

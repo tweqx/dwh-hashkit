@@ -64,12 +64,36 @@ typedef struct {
   whirlpool_state_t whirlpool;
 } hashbox_t;
 
-// Creates a new hashbox. This hashbox should be freed with 'hashbox_final'
+typedef struct {
+  uint8_t sha512[64];
+  uint8_t blake2b[64];
+  uint8_t streebog[64];
+  uint8_t sha3[64];
+  uint8_t fnv0[64];
+  uint8_t fnv1[64];
+  uint8_t fnv1a[64];
+  uint8_t grostl[64];
+  uint8_t md6[64];
+  uint8_t jh[64];
+  uint8_t blake512[64];
+  uint8_t lsh[64];
+  uint8_t skein[64];
+  uint8_t keccak3[64];
+  uint8_t cubehash[64];
+  uint8_t whirlpool0[64];
+  uint8_t whirlpoolT[64];
+  uint8_t whirlpool[64];
+} hashes_list_t;
+
+// Creates a new hashbox. This hashbox should be freed by calling 'hashbox_final' or 'hashbox_final_hashes'
 hashbox_t* hashbox_new();
 // Updates all hashes with 'data', of length 'length' bytes
 void hashbox_update(hashbox_t* hashbox, uint8_t* data, uint32_t length);
 // Computes the digest of each hash, returns HASHBOX_NO_MATCH if none are matching to the DWH,
 //  or else the relevant HASHBOX_* constant
 unsigned int hashbox_final(hashbox_t* hashbox);
+// Same as 'hashbox_final', but returns all hashes in a 'hashes_list_t' instead of a HASHBOX_* constant.
+// The returned pointer must be freed using 'free()'
+hashes_list_t* hashbox_final_hashes(hashbox_t* hashbox);
 
 #endif
